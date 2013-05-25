@@ -66,16 +66,16 @@ function calculateDeposit()
     $('#resulttbody').empty();
     $('.monthincomecontainer').empty();
 
-    var urlTemplate = '/deposit/year/{0}/month/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}';
-
     var init = rmspce($('#init').val());
     var monthadd = rmspce($('#monthadd').val());
-    $.get(util.format(urlTemplate, $('#years').val(), $('#months').val(), $('#percent').val(), $('#premiumPercent').val(), init, monthadd), function success(data)
+
+    var urlTemplate = '/deposit/year/{0}/month/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}';
+    var requestUrl = util.format(urlTemplate, $('#years').val(), $('#months').val(), $('#percent').val(), $('#premiumPercent').val(), init, monthadd);
+    util.ajax.get(requestUrl, function success(data)
     {
         createResultTables(data);
         $('.monthincomepanel').removeClass('hiddenstyle');
-    }).always(function()
-    {
+    }, function always() {
         $('#calculateButton').prop('disabled', false);
         $('.loaderimgpanel').addClass('hiddenstyle');
     });
@@ -237,23 +237,19 @@ function rmspce(str)
 var util = {
     rtrim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
     queryParams: {},
-
     init: function()
     {
         this.queryParams = this.getUrlParams();
     },
-
     trim: function(text)
     {
         return text === null ? '' : (text + ').replace(rtrim, ');
     },
-
     isBlank: function(str)
     {
 
         return str === null || str === '' || this.trim(str) === '';
     },
-
     setValueFromParam: function(id)
     {
         var input = $('#' + id);
@@ -266,11 +262,10 @@ var util = {
             }
         }
     },
-
     getUrlParams: function()
     {
         var vars = [],
-            hash;
+                hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++)
         {
@@ -280,7 +275,6 @@ var util = {
         }
         return vars;
     },
-
     format: function()
     {
         var args = arguments; //not array
@@ -290,7 +284,6 @@ var util = {
             return typeof args[number] != 'undefined' ? args[number] : match;
         });
     },
-
     //remove and get 1st, not array required
     shift: function(arr)
     {
@@ -307,14 +300,73 @@ var util = {
         }
         return first;
     },
-
     th: function(name)
     {
         return '<th scope="col">' + name + '</th>';
     },
-
     td: function(val)
     {
         return '<td>' + val + '</td>';
-    }
-}
+    },
+    isDefined: function(obj) {
+        return typeof obj !== 'undefined' && obj !== null;
+    },
+    ajax: {
+        createXHR: function()
+        {
+            var xhr;
+            if (window.ActiveXObject)
+            {
+                try
+                {
+                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e)
+                {
+                    xhr = null;
+                }
+            }
+            else
+            {
+                xhr = new XMLHttpRequest();
+            }
+
+            return xhr;
+        },
+        get: function(url, success, always, error) {
+            var xhr = this.createXHR();
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState === 4)
+                {
+                    var status = xhr.status;// like 200
+                    var statusText = xhr.statusText;//like OK
+
+                    if (status == '200')
+                    {
+                        if (util.isDefined(success))
+                        {
+                            var response = eval('(' + xhr.responseText + ')');
+                            success(response);
+                        }
+                    }
+                    else
+                    {
+                        if (util.isDefined(error))
+                        {
+                            error(status, statusText, data);
+                        }
+                    }
+
+                    if (util.isDefined(always))
+                    {
+                        always();
+                    }
+                }
+            }
+
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('Accept', '*/*');
+            xhr.send();
+        }
+    }}
