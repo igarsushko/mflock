@@ -1,0 +1,190 @@
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="css/mflock.css" />
+        <script type="text/Javascript" src="js/jquery/jquery.js"></script>
+        <script type="text/Javascript" src="js/mflock.js"></script>
+        <style type="text/css">
+            div, label, table {
+                bborder-style: solid
+            }
+            .container {
+                position: relative;
+                max-width: 1400px;
+                height: 400px;
+                top: 50px;
+                margin: auto;
+                /* margin auto - centers */
+            }
+            .contactBottomPanel {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                width: 200px;
+                text-align: right;
+                margin: 2px;
+                margin-right: 7px;
+                font-size: 12px;
+            }
+            .inputs {
+                width: 50%;
+            }
+            .inputwithlabel {
+                display: block;
+            }
+            .inputlength {
+                width: 70px;
+            }
+            .inputlength2 {
+                width: 100%;
+            }
+            td div label {
+                /*labels above*/
+                display: block;
+            }
+            label {
+                margin-bottom: 3px;
+                margin-left: 1px;
+                color: #039;
+                font-size: 13px;
+            }
+            .commonfont {
+                font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+                font-size: 13px;
+                color: #039;
+            }
+            .inputpanel {
+                float: left;
+                margin-right: 30px;
+            }
+            .resultpanel {
+                display: inline-block;
+                width: 70%;
+                position: relative;
+                top: 0;
+            }
+            .loaderimgpanel {
+                display: inline;
+                position: relative;
+                top: 6px;
+            }
+            .hiddenstyle {
+                visibility: hidden;
+            }
+            .separator {
+                position: relative;
+                top: 20px;
+                bottom:20px;
+                height: 155px;
+                display: inline-block;
+                width: 5px;
+                border-right: 1px solid rgba(206, 203, 213, 0.44);
+                float: left;
+                margin-right: 40px;
+            }
+            .monthincomepanel {
+                clear: left;
+                float: left;
+                width: 100%;
+            }
+            .monthincomepanelheader {
+                float:right;
+                margin: 20px;
+                font-size: 15px;
+            }
+            .monthincomecontainer {
+                clear: both;
+            }
+            .spacifyme {
+            }
+            .intnumvalidate {
+            }
+            .floatnumvalidate {
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container commonfont">
+            <div id="inputpan" class="inputpanel">
+                <table cellpadding="6px">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="inputwithlabel">
+                                    <label for="years">Years</label>
+                                    <input id="years" type="text" value="1" class="inputlength intnumvalidate">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="inputwithlabel">
+                                    <label for="months">Months</label>
+                                    <input id="months" type="text" value="0" class="inputlength intnumvalidate">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="inputwithlabel">
+                                    <label for="init">Initial</label>
+                                    <input id="init" type="text" value="15000" class="inputlength2 spacifyme floatnumvalidate">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="iputwithlabel">
+                                    <label for="percent">%</label>
+                                    <input id="percent" type="text" value="12" class="inputlength floatnumvalidate">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="inputwithlabel">
+                                    <label for="premiumPercent">Premium %</label>
+                                    <input id="premiumPercent" type="text" value="0.5" class="inputlength floatnumvalidate">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="inputwithlabel">
+                                    <label for="monthadd">Month add</label>
+                                    <input id="monthadd" type="text" value="1000" class="inputlength2 spacifyme floatnumvalidate">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <div style="float: right">
+                                    <div class="loaderimgpanel hiddenstyle">
+                                        <img src='img/loader.gif' />
+                                    </div>
+                                    <button class="nbutton" id="calculateButton" type="button">Calculate</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="separator"></div>
+            <div class="resultpanel">
+                <table class="mintable">
+                    <thead>
+                        <tr>
+                            <th width="30%">End Sum</th>
+                            <th width="24%">Percents</th>
+                            <th width="24%">Premium percents</th>
+                            <th>Added manually</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resulttbody"></tbody>
+                </table>
+            </div>
+            <div class="monthincomepanel hiddenstyle">
+                <div class="monthincomepanelheader">Month income</div>
+                <div class="monthincomecontainer"></div>
+            </div>
+        </div>
+        <div class="contactBottomPanel">
+            <a href="mailto:igar.sushko@gmail.com?Subject=MoneyFlock">igar.sushko@gmail.com</a>
+        </div>
+    </body>
+
+</html>
