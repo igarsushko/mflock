@@ -68,13 +68,7 @@ function initServer()
     server.use(restify.throttle({
         burst: 6,
         rate: 5,
-        ip: true,
-        overrides: {
-            '127.0.0.2': {
-                rate: 0, // unlimited
-                burst: 0
-            }
-        }
+        ip: true
     }));
 
     configureRoutes(server);
@@ -85,13 +79,13 @@ function initServer()
 
     setInterval(function() {
         printMemoryUsage();
-    }, 1000);
+    }, 60000);
 
     server.listen(vars.port, vars.ip, function()
     {
         console.log('%s listening at %s', server.name, server.url);
         console.log('running dir %s', process.cwd());
-        console.log('Node runtime %s, platform %s', process.version, process.platform);
+        console.log('Node runtime %s, platform %s %s', process.version, process.platform, process.arch);
         printMemoryUsage();
     });
 }
