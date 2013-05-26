@@ -1,0 +1,25 @@
+{
+  "author": {
+    "name": "Igar Sushko",
+    "email": "igar.sushko@gmail.com"
+  },
+  "name": "mflock",
+  "homepage": "http://moneyflock.com",
+  "description": "Site for active/passive money flocks counting.",
+  "version": "1.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:igarsushko/mflock.git"
+  },
+  "scripts": {
+      "start": "node server/server.js"
+  },
+  "main": "server/server.js",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "dependencies": {
+   "restify": "2.5.1"
+  },
+  "private": true
+}
