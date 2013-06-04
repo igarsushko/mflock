@@ -376,13 +376,13 @@ function rmspce(str)
 var util = {
     rtrim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
     queryParams: {},
-    depositRestTemplate: '/srv/deposit/years/{0}/months/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}',
+    depositRestTemplate: '/deposit/years/{0}/months/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}',
     depositSiteTemplate: '',
     init: function()
     {
         this.queryParams = this.getUrlParams();
 
-        var siteBase = window.location.protocol + '//' + window.location.host + '/site/deposit.html';
+        var siteBase = window.location.protocol + '//' + window.location.host + '/deposit.html';
         this.depositSiteTemplate = siteBase + '?a=deposit&years={0}&months={1}&percent={2}&premiumpercent={3}&init={4}&monthadd={5}';
     },
     trim: function(text)

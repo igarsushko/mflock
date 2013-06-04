@@ -12,7 +12,7 @@ initServer();
 function configureRoutes(server)
 {
     // Routes
-    server.get('/srv/deposit/years/:years/months/:months/percent/:percent/premiumpercent/:premiumpercent/init/:init/monthadd/:monthadd', function respond(req, res, next)
+    server.get('/deposit/years/:years/months/:months/percent/:percent/premiumpercent/:premiumpercent/init/:init/monthadd/:monthadd', function respond(req, res, next)
     {
         var p = req.params;
         validateDepositParams(p, next);
