@@ -1,0 +1,366 @@
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="css/mflock.css" />
+        <script type="text/Javascript" src="js/jquery/jquery.js"></script>
+        <script type="text/Javascript" src="js/mflock.js"></script>
+        <style type="text/css">
+            div, label, table {
+                bborder-style: solid
+            }
+            .container {
+                position: relative;
+                max-width: 1200px;
+                height: 100%;
+                top: 50px;
+                margin: auto; /* centers */
+                line-height: 1.3em;
+            }
+            .contactBottomPanel {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                width: 200px;
+                text-align: right;
+                margin: 2px;
+                margin-right: 7px;
+                font-size: 12px;
+            }
+            .inputs {
+                width: 50%;
+            }
+            .inputwithlabel {
+            }
+            .inputlength {
+                width: 70px;
+            }
+            .inputlength2 {
+                width: 100%;
+            }
+            td div label {
+                /*labels above*/
+                display: block;
+            }
+            label {
+                margin-bottom: 3px;
+                margin-left: 1px;
+                color: #039;
+                font-size: 12px;
+            }
+            .commonfont {
+                font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+                font-size: 13px;
+                color: #039;
+            }
+            .inputpanel {
+                float: left;
+                margin-right: 30px;
+            }
+            .calcbuttonpanel {
+                float: right;
+                padding: 0;
+            }
+            .resultpanel {
+                padding-top: 20px;
+                display: inline-block;
+            }
+            .resultrow {
+                margin-bottom: 30px;
+            }
+            .resultcol {
+                display: inline-block;
+                margin-left: 70px;
+                float: left;
+                width: 170px;
+            }
+            .resultheader {
+                display:inline-block;
+                width: 170px;
+                border-bottom: 1px solid #e8e8e7;
+                padding-bottom: 6px;
+                margin-bottom: 6px;
+            }
+            .resultvalue {
+                font-size: 14px;
+                height: 25px;
+            }
+            .loaderimgpanel {
+                display: inline;
+                position: relative;
+                top: 9px;
+            }
+            .loaderimg {
+                height: 30px;
+            }
+            .hiddenstyle {
+                visibility: hidden;
+            }
+            .separator {
+                position: relative;
+                top: 20px;
+                bottom:20px;
+                height: 155px;
+                display: inline-block;
+                width: 45px;
+                border-right: 1px solid #e8e8e7;
+                float: left;
+            }
+            .monthincomepanel {
+                clear: left;
+                float: left;
+                width: 100%;
+            }
+            .monthincomepanelheader {
+                float:right;
+                margin: 20px;
+            }
+            .monthincomecontainer {
+                clear: both;
+            }
+            .spacifyme {
+            }
+            .intnumvalidate {
+            }
+            .floatnumvalidate {
+            }
+            .permanentlink {
+                float:left;
+                position: relative;
+                top: -35px;
+            }
+            .fixify {
+            }
+            .headerpanel {
+                border-bottom: 2px solid #e8e8e7;
+                font-size: 16px;
+                margin-bottom: 25px;
+            }
+            .headerpanelmessage {
+            }
+            .error-panel {
+                font-size: 13px;
+                color: rgb(255, 0, 0);
+                position: relative;
+                top: -12px;
+                right: -8px;
+                min-height: 18px;
+            }
+            .help-panel {
+                font-size: 12px;
+                text-align: right;
+                margin-bottom: 2px;
+            }
+            .helplink {
+                margin-right: 2px;
+            }
+            .help-popup {
+                border: 1px solid #e8e8e7;
+                border-radius: 4px;
+                width: 500px;
+                position:fixed;
+                z-index: 2;
+                top:25%;
+                left:40%;
+                margin:-100px 0 0 -100px;
+                background: white;
+                line-height: 1.3em;
+            }
+            .help-popup-header {
+                float: right;
+                padding-top: 3px;
+                padding-right: 7px;
+                font-size: 12px;
+                margin-left: 5px;
+            }
+            .help-popup-content {
+                padding: 23px 20px 22px 20px;
+            }
+            .help-popup-content div {
+                margin-left: 20px;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                height: 100%;
+            }
+            .root {
+                z-index: 0;
+                width: 100%;
+                top: 0;
+                left: 0;
+                position: absolute;
+            }
+            .disabler {
+                z-index: 1;
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                background-color: #000;
+                opacity: .6;
+            }
+        </style>
+    </head>
+    
+    <body class="commonfont">
+        <div class="root">
+            <div class="container">
+                <div class="headerpanel">
+                    <div class="headerpanelmessage">Calculate your deposit.</div>
+                    <div class="help-panel">
+                        <a id="helpa" class="helplink" href="">Help</a>
+                    </div>
+                </div>
+                <div id="errormessage" class="error-panel"></div>
+                <div id="inputpan" class="inputpanel">
+                    <table cellpadding="6px">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="inputwithlabel">
+                                        <label for="years">Years</label>
+                                        <input id="years" type="text" value="5" maxvalue="200" maxlength="3"
+                                        class="inputlength intnumvalidate fixify">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="inputwithlabel">
+                                        <label for="months">Months</label>
+                                        <input id="months" type="text" value="0" maxlength="2" maxvalue="12"
+                                        class="inputlength intnumvalidate fixify">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="inputwithlabel">
+                                        <label for="init">Initial</label>
+                                        <input id="init" type="text" value="15000" maxvalue="999999999999"
+                                        maxlength="15" class="inputlength2 spacifyme floatnumvalidate fixify">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="iputwithlabel">
+                                        <label for="percent">%</label>
+                                        <input id="percent" type="text" value="12" maxlength="4" maxvalue="1000"
+                                        class="inputlength floatnumvalidate fixify">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="inputwithlabel">
+                                        <label for="premiumpercent">Premium %</label>
+                                        <input id="premiumpercent" type="text" value="0.5" maxvalue="1000"
+                                        maxlength="4" class="inputlength floatnumvalidate fixify">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="inputwithlabel">
+                                        <label for="monthadd">Month add</label>
+                                        <input id="monthadd" type="text" value="1000" maxvalue="999999999999"
+                                        maxlength="15" class="inputlength2 spacifyme floatnumvalidate fixify">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="calcbuttonpanel">
+                                        <div class="loaderimgpanel hiddenstyle">
+                                            <img src='img/loader.gif' class="loaderimg" />
+                                        </div>
+                                        <button class="nbutton" id="calculateButton" type="button">Calculate</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="commonfont permanentlink hiddenstyle">
+                                        <a href="" id="permlink" target="_blank">Permanent link</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="separator"></div>
+                <div class="resultpanel">
+                    <div class="resultcol">
+                        <div class="resultrow">
+                            <div class="resultheader">End Sum</div>
+                            <div id="endsumresult" class="resultvalue"></div>
+                        </div>
+                        <div class="resultrow">
+                            <div class="resultheader">Percents</div>
+                            <div id="percentsresult" class="resultvalue"></div>
+                        </div>
+                    </div>
+                    <div class="resultcol">
+                        <div class="resultrow">
+                            <div class="resultheader">Premium percents</div>
+                            <div id="premiumpercentresult" class="resultvalue"></div>
+                        </div>
+                        <div class="resultrow">
+                            <div class="resultheader">Added manually</div>
+                            <div id="manualaddresult" class="resultvalue"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="monthincomepanel hiddenstyle">
+                    <div class="monthincomepanelheader">Month income</div>
+                    <div class="monthincomecontainer"></div>
+                </div>
+                <div class="contactBottomPanel">
+                    <a href="mailto:igar.sushko@gmail.com?Subject=MoneyFlock">igar.sushko@gmail.com</a>
+                </div>
+            </div>
+            <div class="help-popup hiddenstyle">
+                <div class="help-popup-header">
+                    <a id="help-popup-close" href="">Close</a>
+                </div>
+                <div class="help-popup-content">
+                    <b>Premium %</b> - calculated each month, will be added to the sum only at
+                    the end of the deposit. Leave 0 if you don't have it.
+                    <br/>
+                    <br/>
+                    <b>Calculations example:</b><br/>
+                    <div>3 months, initial 10 000, under 12%, premium 1%, month add 1000.</div>
+                    <br/>End of Month 1:
+                    <div>
+                             a) calculate premium percents: 10 000 * 0.01 / 12 = 8.33
+                        <br/>b) calculate percents: 10 000 * 0.12 / 12 = 100
+                        <br/>c) add percents to the sum: 10 000 + 100 = 10 100
+                        <br/>d) manual added money: 10 100 + 1000 = 11 100
+                        <br/>
+                    </div>
+                        <br/>End of Month 2:
+                    <div>
+                             a) calculate premium percents: 11 100 * 0.01 / 12 = 9.25
+                        <br/>b) sum premium percents 8.33 + 9.25 = 17.58
+                        <br/>c) calculate percents: 11 100 * 0.12 / 12 = 111
+                        <br/>d) add percents to the sum: 11 100 + 111 = 11 211
+                        <br/>e) manual added money: 11 211 + 1000 = 12 211
+                        <br/>
+                    </div>
+                        <br/>End of Month 3:
+                    <div>
+                             a) calculate premium percents: 12 211 * 0.01 / 12 = 10.18
+                        <br/>b) sum premium percents 17.58 + 10.18 = 27.76
+                        <br/>c) calculate percents: 11 211 * 0.12 / 12 = 122.11
+                        <br/>d) add percents to the sum: 12 211 + 122.11 = 12 333.11
+                        <br/>e) add manual added money: 12 333.11 + 1000 = 13 333.11
+                        <br/>f) manual added money: 13 333.11 + 27.76 = 13 360.76
+                        <br/>
+                    </div>
+                        <br/>Result:
+                        <div>End sum: 13 361, percents: 333.11, premium percents: 27.76, manually
+                        added: 3 000. Month income: M1 100, M2 111, M3 122.11
+                        </div>
+                </div>
+            </div>
+            <div class="disabler hiddenstyle"></div>
+        </div>
+    </body>
+
+</html>

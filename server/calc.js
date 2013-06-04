@@ -1,13 +1,13 @@
 exports.calculateDeposit = calculateDeposit;
 
-function calculateDeposit(years, months, percent, premiumPercent, init, everyMonthAdd)
+function calculateDeposit(years, months, percent, premiumpercent, init, everyMonthAdd)
 {
     var response = {
         params: {
             "years": years,
             "months": months,
             "percent": percent,
-            "premiumPercent": premiumPercent,
+            "premiumpercent": premiumpercent,
             "init": init,
             "everyMonthAdd": everyMonthAdd
         },
@@ -15,12 +15,12 @@ function calculateDeposit(years, months, percent, premiumPercent, init, everyMon
             monthIncome: {},
             endSum: 0.0,
             percents: 0.0,
-            premiumPercent: 0.0,
+            premiumpercent: 0.0,
             manualAdded: 0.0
         }
     };
 
-   var result = response.result;
+    var result = response.result;
 
     var sum = parseFloat(init);
     everyMonthAdd = parseFloat(everyMonthAdd);
@@ -44,13 +44,18 @@ function calculateDeposit(years, months, percent, premiumPercent, init, everyMon
         yearAndMonth = true;
     }
 
-
-    for (var y = 0; y < yearsLoop; y++)
+    var finite = true;
+    outer: for (var y = 0; y < yearsLoop; y++)
     {
         for (var m = 0; m < monthLoop; m++)
         {
+            if (!finite)
+            {
+                break outer;
+            }
+
             var percentsForMonth = sum * percent / 100 / 12;
-            var premiumIncomMoth = sum * premiumPercent / 100 / 12;
+            var premiumIncomMoth = sum * premiumpercent / 100 / 12;
             sum += (percentsForMonth + everyMonthAdd);
             percentsTotal += percentsForMonth;
             premiumIncome += premiumIncomMoth;
@@ -64,20 +69,40 @@ function calculateDeposit(years, months, percent, premiumPercent, init, everyMon
         {
             monthLoop = months;
         }
+
+        finite = isFinite(sum) && isFinite(percentsTotal) && isFinite(premiumIncome) && isFinite(manualAdded);
     }
 
-    sum += premiumIncome;
+    if (finite)
+    {
+        sum += premiumIncome;
 
-    result.endSum = fmtMoney(sum);
-    result.percents = fmtMoney(percentsTotal);
-    result.premiumPercent = fmtMoney(premiumIncome);
-    result.manualAdded = fmtMoney(manualAdded);
+        result.endSum = fmtMoney(sum);
+        result.percents = fmtMoney(percentsTotal);
+        result.premiumpercent = fmtMoney(premiumIncome);
+        result.manualAdded = fmtMoney(manualAdded);
+    }
+    else
+    {
+        response = {
+            code: 'InfiniteResult',
+            message: 'Please use smaller arguments, result is too big.'
+        }
+    }
 
     return response;
 }
 
 function fmtMoney(money)
 {
-    money = parseFloat(money).toFixed(2);
+    money = parseFloat(money);
+    if (money < 10000 && money !== 0)
+    {
+        money = money.toFixed(2);
+    }
+    else
+    {
+        money = money.toFixed(0);
+    }
     return money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }

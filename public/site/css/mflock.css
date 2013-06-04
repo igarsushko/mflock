@@ -51,7 +51,6 @@ input[type=text]:focus {
     background:-o-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
     background:-ms-linear-gradient(top, #ffffff 5%, #f6f6f6 100%);
     background:linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f6f6f6', GradientType=0);
     background-color:#ffffff;
     -moz-border-radius:4px;
     -webkit-border-radius:4px;
@@ -59,12 +58,9 @@ input[type=text]:focus {
     border:1px solid #dcdcdc;
     display:inline-block;
     color:#666666;
-    /*font-family:arial; */
     font-size:13px;
     font-weight:bold;
     padding:6px 24px;
-    text-decoration:none;
-    text-shadow:0px 1px 0px #ffffff;
 }
 .nbutton:hover {
     background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f6f6f6), color-stop(1, #ffffff));
@@ -73,7 +69,6 @@ input[type=text]:focus {
     background:-o-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
     background:-ms-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
     background:linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f6f6f6', endColorstr='#ffffff', GradientType=0);
     background-color:#f6f6f6;
 }
 .nbutton:active {
@@ -81,39 +76,6 @@ input[type=text]:focus {
     top:1px;
 }
 /* nice button end*/
-
-/* nice table start */
-.mintable
-{
-    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-	font-size: 15px;
-	background: #fff;
-	border-collapse: collapse;
-	text-align: left;
-    width: 100%;
-}
-.mintable th
-{
-    padding: 8px 2px;
-	font-weight: normal;
-	font-size: 13px;
-	border-bottom: 1px solid #6678b1;
-	border-right: 30px solid #fff;
-	border-left: 30px solid #fff;
-	color: #039;
-}
-.mintable td
-{
-    padding: 12px 2px 0px 2px;
-	border-right: 30px solid #fff;
-	border-left: 30px solid #fff;
-	color: #669;
-}
-.mintable tbody tr:hover td
-{
-	color: #009;
-}
-/* nice table end */
 
 /* nice table zebra begin */
 
@@ -129,12 +91,16 @@ input[type=text]:focus {
 {
 	font-size: 13px;
 	font-weight: normal;
-	padding: 10px 8px;
+	padding-bottom: 8px;
+    padding-left: 3px;
 	color: #039;
 }
 .zebra td
 {
-	padding: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 8px;
+	padding-bottom: 8px;
 	color: #669;
 }
 .zebra .odd

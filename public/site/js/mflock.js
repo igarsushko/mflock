@@ -2,20 +2,29 @@ $(document).ready(function()
 {
     util.init();
 
-    setValuesFromQuery();
     initComponents();
+    setValuesFromQuery();
+    runActionFromQuery();
 });
+
+function runActionFromQuery()
+{
+    if (util.queryParams['a'] == 'deposit')
+    {
+        calculateDeposit();
+    }
+}
 
 function setValuesFromQuery()
 {
     if (util.queryParams['a'] == 'deposit')
     {
-        util.setValueFromParam('years');
-        util.setValueFromParam('months');
-        util.setValueFromParam('percent');
-        util.setValueFromParam('premiumPercent');
-        util.setValueFromParam('init');
-        util.setValueFromParam('monthadd');
+        util.setValueFromParam('years', 0, 'int');
+        util.setValueFromParam('months', 0, 'int', 12);
+        util.setValueFromParam('percent', 0, 'float');
+        util.setValueFromParam('premiumpercent', 0, 'float');
+        util.setValueFromParam('init', 0, 'float');
+        util.setValueFromParam('monthadd', 0, 'float');
     }
 }
 
@@ -23,11 +32,21 @@ function initComponents()
 {
     $(document).keypress(function(e)
     {
-        if (e.which == 13 || e.which == 32)
+        var charCode = util.charCode(e);
+        if (charCode == 13)//enter
         {
             calculateDeposit();
         }
     });
+    
+    $(document).keydown(function(e)
+    {
+        var charCode = util.charCode(e);
+        if (charCode == 27 && !$('.help-popup').hasClass('hiddenstyle'))//escape
+        {
+            closeHelpPopup();
+        }
+    })
 
     $('#calculateButton').click(function()
     {
@@ -36,6 +55,16 @@ function initComponents()
 
     $('.intnumvalidate').keypress(isIntNumberKey);
     $('.floatnumvalidate').keypress(isFloatNumberKey);
+    $('.fixify').change(fixify);
+    $('.fixify').keypress(function(e)
+    {
+        if (util.charCode(e) == 13)
+        {
+            fixify(e);
+        }
+    });
+
+    $('.fixify').keydown(disableCtrlKeyCombination);
 
     $('.spacifyme').change(function()
     {
@@ -43,15 +72,70 @@ function initComponents()
     });
     $('.spacifyme').change();
 
-    //run action from query
-    if (util.queryParams['a'] == 'deposit')
+    //help
+    $('#helpa').click(function()
     {
-        calculateDeposit();
+        $('.help-popup').removeClass('hiddenstyle');
+        $('.disabler').keydown(function(){alert(3)});
+        $('.disabler').removeClass('hiddenstyle');
+        $('.disabler').keydown(function(){alert(2)});
+        return false;
+    });
+
+    $('#help-popup-close').click(function()
+    {
+        closeHelpPopup();
+        return false;
+    });
+}
+
+function closeHelpPopup()
+{
+    $('.help-popup').addClass('hiddenstyle');
+    $('.disabler').addClass('hiddenstyle');
+}
+
+function disableCtrlKeyCombination(e)
+{
+    var forbiddenKeys = ['v'];
+    var key;
+    var isCtrl;
+    if (window.event)
+    {
+        key = window.event.keyCode; //IE
+        isCtrl = window.event.ctrlKey;
+    }
+    else
+    {
+        key = e.which; //modern browsers
+        isCtrl = e.ctrlKey;
+    }
+
+    if (isCtrl)
+    {
+        for (var i = 0; i < forbiddenKeys.length; i++)
+        {
+            if (forbiddenKeys[i] == String.fromCharCode(key).toLowerCase())
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function validateFields()
+{
+    if ($('#years').val() == 0 && $('#months').val() == 0)
+    {
+        $('#years').val(1);
     }
 }
 
 function calculateDeposit()
 {
+    validateFields();
+
     //check if calculation is in progress
     var disabled = $('#calculateButton').attr('disabled');
     if (disabled)
@@ -59,9 +143,17 @@ function calculateDeposit()
         return;
     }
 
+    //empty fields
+    $('#endsumresult').empty();
+    $('#percentsresult').empty();
+    $('#premiumpercentresult').empty();
+    $('#manualaddresult').empty();
+    $('#errormessage').empty();
+
     $('#calculateButton').prop('disabled', true);
     $('.loaderimgpanel').removeClass('hiddenstyle');
     $('.monthincomepanel').addClass('hiddenstyle');
+    $('.permanentlink').addClass('hiddenstyle');
 
     $('#resulttbody').empty();
     $('.monthincomecontainer').empty();
@@ -69,24 +161,40 @@ function calculateDeposit()
     var init = rmspce($('#init').val());
     var monthadd = rmspce($('#monthadd').val());
 
-    var urlTemplate = '/deposit/year/{0}/month/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}';
-    var requestUrl = util.format(urlTemplate, $('#years').val(), $('#months').val(), $('#percent').val(), $('#premiumPercent').val(), init, monthadd);
-    util.ajax.get(requestUrl, function success(data)
+    var deposit = createDepositUrls($('#years').val(), $('#months').val(), $('#percent').val(), $('#premiumpercent').val(), init, monthadd);
+    util.ajax.get(deposit.restUrl, function success(data)
     {
-        createResultTables(data);
+        $('#permlink').attr('href', deposit.permUrl);
+        createResultOutput(data);
         $('.monthincomepanel').removeClass('hiddenstyle');
-    }, function always() {
+        $('.permanentlink').removeClass('hiddenstyle');
+    }, function always()
+    {
         $('#calculateButton').prop('disabled', false);
         $('.loaderimgpanel').addClass('hiddenstyle');
     });
 }
 
-function createResultTables(data)
+function createDepositUrls(years, months, percent, premiumpercent, init, monthadd)
 {
-    // #1
+    var rest = util.format(util.depositRestTemplate, years, months, percent, premiumpercent, init, monthadd);
+    var perm = util.format(util.depositSiteTemplate, years, months, percent, premiumpercent, init, monthadd);
+
+    return {
+        restUrl: rest,
+        permUrl: perm
+    }
+}
+
+function createResultOutput(data)
+{
     var result = data.result;
-    var t = '<tr>' + util.td(result.endSum) + util.td(result.percents) + util.td(result.premiumPercent) + util.td(result.manualAdded) + '</tr>';
-    $('#resulttbody').html(t);
+
+    // #1
+    $('#endsumresult').text(result.endSum);
+    $('#percentsresult').text(result.percents);
+    $('#premiumpercentresult').text(result.premiumpercent);
+    $('#manualaddresult').text(result.manualAdded);
 
     // #2
     var income = data.result.monthIncome;
@@ -128,7 +236,7 @@ function createResultTables(data)
 /* create income table headers, can be less 12 month*/
 function incomeHeaders(income)
 {
-    var headers = util.th('Year');
+    var headers = util.th('Year', 'min-width: 40px;');
 
     var propIdx = 1;
     for (var prop in income)
@@ -186,8 +294,8 @@ function spacify(s)
 
 function isFloatNumberKey(evt)
 {
-    var charCode = (evt.which) ? evt.which : event.keyCode;
-    var num = charCode == 46 ? 1 : 0;
+    var charCode = util.charCode(evt);
+    var num = charCode == 46 ? 1 : 0; // if dot was pressed
     if (evt.target.value.split('.').length + num > 2) //already has dot
     {
         stopEvent(true, evt);
@@ -197,18 +305,48 @@ function isFloatNumberKey(evt)
         return;
     }
 
+    var isAllowed = isNumKey(charCode) || charCode == 46 || isSpecialKey(charCode);
 
-    var isNumber = (charCode >= 48 && charCode <= 57) || charCode == 46;
-
-    stopEvent(!isNumber, evt);
+    stopEvent(!isAllowed, evt);
 }
 
 function isIntNumberKey(evt)
 {
-    var charCode = (evt.which) ? evt.which : event.keyCode;
-    var isNumber = (charCode >= 48 && charCode <= 57);
+    var charCode = util.charCode(evt);
+    var isAllowed = isNumKey(charCode) || isSpecialKey(charCode);
 
-    stopEvent(!isNumber, evt);
+    stopEvent(!isAllowed, evt);
+}
+
+function isSpecialKey(charCode)
+{
+    //8 - backspace
+    return charCode == 8;
+}
+
+function isNumKey(charCode)
+{
+    return charCode >= 48 && charCode <= 57;
+}
+
+function fixify(evt)
+{
+    //1. zero like
+    var val = evt.target.value;
+    if (util.isBlank(val) || val.match('^[0\\.]0*\\.?0*$'))
+    {
+        evt.target.value = '0';
+    }
+
+    //2.
+
+    //3. max value 
+    val = evt.target.value;
+    var max = $(evt.target).attr('maxvalue');
+    if (parseFloat(val) > parseFloat(max))
+    {
+        evt.target.value = max;
+    }
 }
 
 function stopEvent(doStop, evt)
@@ -237,35 +375,72 @@ function rmspce(str)
 var util = {
     rtrim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
     queryParams: {},
+    depositRestTemplate: '/deposit/years/{0}/months/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}',
+    depositSiteTemplate: '',
     init: function()
     {
         this.queryParams = this.getUrlParams();
+
+        var siteBase = window.location.protocol + '//' + window.location.host + '/site/deposit.html';
+        this.depositSiteTemplate = siteBase + '?a=deposit&years={0}&months={1}&percent={2}&premiumpercent={3}&init={4}&monthadd={5}';
     },
     trim: function(text)
     {
-        return text === null ? '' : (text + ').replace(rtrim, ');
+        return text === null ? '' : text.replace(this.rtrim, '');
     },
     isBlank: function(str)
     {
-
-        return str === null || str === '' || this.trim(str) === '';
+        return typeof str === 'undefined' || str === null || str === '' || this.trim(str) === '';
     },
-    setValueFromParam: function(id)
+    setValueFromParam: function(id, fallback, type)
     {
         var input = $('#' + id);
-        if (input !== null)
+        if (this.isDefined(input))
         {
+            var result = this.isDefined(fallback) ? fallback : '';
+
             var param = this.queryParams[id];
             if (!this.isBlank(param))
             {
-                input.val(param);
+                if (this.isDefined(type))
+                {
+                    try
+                    {
+                        if ('int' === type)
+                        {
+                            result = parseInt(param);
+                            if (isNaN(result))
+                            {
+                                result = '0';
+                            }
+                        }
+                        else if ('float' === type)
+                        {
+                            result = parseFloat(param);
+                            if (isNaN(result))
+                            {
+                                result = '0';
+                            }
+                        }
+                    }
+                    catch (e)
+                    {
+
+                        }
+                }
+                else
+                {
+                    result = param;
+                }
             }
+
+            input.val(result);
         }
     },
     getUrlParams: function()
     {
         var vars = [],
-                hash;
+            hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < hashes.length; i++)
         {
@@ -284,7 +459,7 @@ var util = {
             return typeof args[number] != 'undefined' ? args[number] : match;
         });
     },
-    //remove and get 1st, not array required
+    //remove and get 1st, don't have to be array
     shift: function(arr)
     {
         var len = arr.length;
@@ -300,16 +475,28 @@ var util = {
         }
         return first;
     },
-    th: function(name)
+    th: function(name, style)
     {
-        return '<th scope="col">' + name + '</th>';
+        if (this.isDefined(style))
+        {
+            return '<th scope="col" style="' + style + '" >' + name + '</th>';
+        }
+        else
+        {
+            return '<th scope="col">' + name + '</th>';
+        }
     },
     td: function(val)
     {
         return '<td>' + val + '</td>';
     },
-    isDefined: function(obj) {
+    isDefined: function(obj)
+    {
         return typeof obj !== 'undefined' && obj !== null;
+    },
+    charCode: function(evt)
+    {
+        return evt.which ? evt.which : event.keyCode;
     },
     ajax: {
         createXHR: function()
@@ -333,20 +520,21 @@ var util = {
 
             return xhr;
         },
-        get: function(url, success, always, error) {
+        get: function(url, success, always, error)
+        {
             var xhr = this.createXHR();
             xhr.onreadystatechange = function()
             {
                 if (xhr.readyState === 4)
                 {
-                    var status = xhr.status;// like 200
-                    var statusText = xhr.statusText;//like OK
+                    var status = xhr.status; // like 200
+                    var statusText = xhr.statusText; //like OK
 
+                    var response = eval('(' + xhr.responseText + ')');
                     if (status == '200')
                     {
                         if (util.isDefined(success))
                         {
-                            var response = eval('(' + xhr.responseText + ')');
                             success(response);
                         }
                     }
@@ -354,7 +542,11 @@ var util = {
                     {
                         if (util.isDefined(error))
                         {
-                            error(status, statusText, data);
+                            error(status, statusText, response);
+                        }
+                        else
+                        {
+                            util.ajax.defaultErrorHander(status, statusText, response)
                         }
                     }
 
@@ -368,5 +560,19 @@ var util = {
             xhr.open('GET', url, true);
             xhr.setRequestHeader('Accept', '*/*');
             xhr.send();
+        },
+        defaultErrorHander: function(status, statusText, response)
+        {
+            var mes = '';
+            if (util.isDefined(response.code) && util.isDefined(response.message))
+            {
+                mes += ' ' + response.message;
+            }
+
+            if (!util.isBlank(mes))
+            {
+                $('#errormessage').text(mes);
+            }
         }
-    }}
+    }
+}
