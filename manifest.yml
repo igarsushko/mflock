@@ -1,0 +1,15 @@
+---
+applications:
+  .:
+    name: moneyflock
+    framework:
+      name: standalone
+      info:
+        mem: 64M
+        description: Standalone Application
+        exec: 
+    runtime: node08
+    command: 
+    url: 
+    mem: 64M
+    instances: 1
