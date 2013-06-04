@@ -12,7 +12,7 @@ initServer();
 function configureRoutes(server)
 {
     // Routes
-    server.get('/deposit/years/:years/months/:months/percent/:percent/premiumpercent/:premiumpercent/init/:init/monthadd/:monthadd', function respond(req, res, next)
+    server.get('/srv/deposit/years/:years/months/:months/percent/:percent/premiumpercent/:premiumpercent/init/:init/monthadd/:monthadd', function respond(req, res, next)
     {
         var p = req.params;
         validateDepositParams(p, next);
@@ -145,10 +145,14 @@ function initServer()
         }
     });
 
+    //order matters!
+    configureRoutes(server);
+
     // serve static content
-    server.get(/\/site\/?.*/, restify.serveStatic(
+    server.get(/\/\/?.*/, restify.serveStatic(
     {
-        directory: vars.siteDir
+        directory: vars.siteDir,
+        default: 'deposit.html'
     }));
 
     // configure handlers
@@ -181,8 +185,6 @@ function initServer()
         res.send(new restify.InternalError('Unexpected error on server. Please try again later.'));
         return (true);
     });
-
-    configureRoutes(server);
 
     process.on('exit', function()
     {

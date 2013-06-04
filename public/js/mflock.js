@@ -4,6 +4,8 @@ $(document).ready(function()
 
     initComponents();
     setValuesFromQuery();
+
+    $('.spacifyme').change();
     runActionFromQuery();
 });
 
@@ -70,7 +72,6 @@ function initComponents()
     {
         this.value = spacify(this.value);
     });
-    $('.spacifyme').change();
 
     //help
     $('#helpa').click(function()
@@ -375,7 +376,7 @@ function rmspce(str)
 var util = {
     rtrim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
     queryParams: {},
-    depositRestTemplate: '/deposit/years/{0}/months/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}',
+    depositRestTemplate: '/srv/deposit/years/{0}/months/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}',
     depositSiteTemplate: '',
     init: function()
     {
@@ -566,7 +567,15 @@ var util = {
             var mes = '';
             if (util.isDefined(response.code) && util.isDefined(response.message))
             {
-                mes += ' ' + response.message;
+                var c = response.code;
+                if (c == 'InternalError' || c == 'TooManyRequestsError' || c == 'InvalidArgument')
+                {
+                    mes += ' ' + response.message;
+                }
+                else
+                {
+                    mes += 'Unexpected server error. Please try again later';
+                }
             }
 
             if (!util.isBlank(mes))
