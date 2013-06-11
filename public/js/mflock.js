@@ -382,7 +382,7 @@ var util = {
     {
         this.queryParams = this.getUrlParams();
 
-        var siteBase = window.location.protocol + '//' + window.location.host + '/deposit.html';
+        var siteBase = 'http://moneyflock.com/deposit.html';
         this.depositSiteTemplate = siteBase + '?a=deposit&years={0}&months={1}&percent={2}&premiumpercent={3}&init={4}&monthadd={5}';
     },
     trim: function(text)

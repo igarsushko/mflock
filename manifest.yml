@@ -3,13 +3,12 @@ applications:
   .:
     name: moneyflock
     framework:
-      name: standalone
+      name: node
       info:
         mem: 64M
-        description: Standalone Application
+        description: Node.js Application
         exec: 
-    runtime: node08
-    command: 
-    url: 
+    infra: eu-aws
+    url: ${name}.${target-base}
     mem: 64M
     instances: 1

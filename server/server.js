@@ -85,7 +85,7 @@ function validateDepositParams(p, next)
 
 function initVars()
 {
-    //c9.io || cloudfoundry.com || localhost
+    //c9.io || cloudfoundry.com, appfog.com || localhost
     vars.port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
     vars.ip = process.env.IP || process.env.VCAP_APP_HOST || vars.localhost;
 

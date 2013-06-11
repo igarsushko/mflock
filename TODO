@@ -1,2 +1,4 @@
 bug in IE same query does not calculate more 1 time
 add favicon.ico
+automation test: like http://host/integrationTest
+it sends requests to rest api, and checks response, disable this url for prod
