@@ -1,3 +1,5 @@
+Deposit
+
 Months on change validate select values add/remove
 calculate on period change
 validate on server month + capfrequency
@@ -13,3 +15,5 @@ client request timout
 focus on enter button on enter
 add validation mechanism, server returns code us highlights field
 shrink result table when not 12 months
+набить до предела текст отпустить - спейсифай не палит
+disable select when calculation is in progress but don't grey it out

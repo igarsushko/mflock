@@ -118,7 +118,7 @@ function populateCFSelectOptions()
         var months = $('#months').val();
 
         var select = util.byId('capfrequency');
-        var prevSelectedIndex = select.selectedIndex;
+        var prevSelectedValue= select.options[select.selectedIndex].value;
 
         select.options.length = 0;
 
@@ -149,8 +149,18 @@ function populateCFSelectOptions()
         {
             select.add(capFrequencyOptions['0']);//deposit end
         }
-        
-        select.selectedIndex = prevSelectedIndex > select.options.length ? 1 : prevSelectedIndex;
+
+        // select prev value, or default
+        var idx = -1;
+        for (var i = 0; i < select.options.length; i++)
+        {
+            if (select.options[i].value == prevSelectedValue)
+            {
+                idx = i;
+                break;
+            }
+        }
+        select.selectedIndex = idx != -1 ? idx : 1;
 }
 
 function clearAll()
@@ -186,16 +196,16 @@ function validateFields()
     }
 }
 
+var calcInProgress = false;
 function calculateDeposit()
 {
-    validateFields();
-
-    //check if calculation is in progress
-    var disabled = $('#calculateButton').attr('disabled');
-    if (disabled)
+    if (calcInProgress)
     {
         return;
     }
+    calcInProgress = true;
+
+    validateFields();
 
     //empty fields
     $('#endsumresult').empty();
@@ -205,6 +215,7 @@ function calculateDeposit()
     $('#errormessage').empty();
 
     $('#calculateButton').prop('disabled', true);
+    
     $('.loaderimgpanel').removeClass('hiddenstyle');
     $('.monthincomepanel').addClass('hiddenstyle');
 
@@ -218,11 +229,12 @@ function calculateDeposit()
     var deposit = createDepositUrls($('#years').val(), $('#months').val(), $('#percent').val(), $('#premiumpercent').val(), init, monthadd, capfreq);
     util.ajax.get(deposit.restUrl, function success(data)
     {
-        createShowResultOutput(data);
+       createShowResultOutput(data);
     }, function always()
     {
         $('#calculateButton').prop('disabled', false);
         $('.loaderimgpanel').addClass('hiddenstyle');
+        calcInProgress = false;
     });
 
     util.changeBrowserUrl(deposit.permUrl);
