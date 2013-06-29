@@ -14,7 +14,8 @@
                 max-width: 1200px;
                 height: 100%;
                 top: 50px;
-                margin: auto; /* centers */
+                margin: auto;
+                /* centers */
                 line-height: 1.3em;
             }
             .contactBottomPanel {
@@ -48,18 +49,19 @@
                 color: #039;
                 font-size: 12px;
             }
-            .commonfont {
-                font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-                font-size: 13px;
-                color: #039;
-            }
             .inputpanel {
                 float: left;
                 margin-right: 30px;
             }
             .calcbuttonpanel {
-                float: right;
                 padding: 0;
+                display: inline;
+                position:relative;
+                bottom: -5px;
+                right: -2px;
+            }
+            .buttonspanel {
+                float:right;
             }
             .resultpanel {
                 padding-top: 20px;
@@ -123,11 +125,6 @@
             .intnumvalidate {
             }
             .floatnumvalidate {
-            }
-            .permanentlink {
-                float:left;
-                position: relative;
-                top: -35px;
             }
             .fixify {
             }
@@ -202,12 +199,34 @@
                 background-color: #000;
                 opacity: .6;
             }
+            .capfrequency {
+            }
+            .capfrequencylabel {
+            }
+            .capfrequencyselect {
+                border-radius:4px;
+                border:1px solid #dcdcdc;
+                display:inline-block;
+                color: rgba(134, 22, 125, 0.94);
+                height:24px;
+                width: 150px;
+                padding-left: 2px;
+            }
         </style>
         <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            (function(i, s, o, g, r, a, m)
+            {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function()
+                {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
             ga('create', 'UA-41512212-1', 'af.cm');
             ga('send', 'pageview');
@@ -245,7 +264,7 @@
                                 <td>
                                     <div class="inputwithlabel">
                                         <label for="init">Initial</label>
-                                        <input id="init" type="text" value="15000" maxvalue="999999999999"
+                                        <input id="init" type="text" value="15 000" maxvalue="999999999999"
                                         maxlength="15" class="inputlength2 spacifyme floatnumvalidate fixify">
                                     </div>
                                 </td>
@@ -268,25 +287,34 @@
                                 <td>
                                     <div class="inputwithlabel">
                                         <label for="monthadd">Month add</label>
-                                        <input id="monthadd" type="text" value="1000" maxvalue="999999999999"
+                                        <input id="monthadd" type="text" value="1 000" maxvalue="999999999999"
                                         maxlength="15" class="inputlength2 spacifyme floatnumvalidate fixify">
                                     </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="3">
-                                    <div class="calcbuttonpanel">
-                                        <div class="loaderimgpanel hiddenstyle">
-                                            <img src='img/loader.gif' class="loaderimg" />
-                                        </div>
-                                        <button class="nbutton" id="calculateButton" type="button">Calculate</button>
+                                <td colspan="2">
+                                    <div class="capfrequency">
+                                        <label class="capfrequencylabel">Capitalization frequency</label>
+                                        <select id="capfrequency" class="capfrequencyselect commonfont">
+                                            <option value="0.5">half of month</option>
+                                            <option value="1" selected>each month</option>
+                                            <option value="3">each 3 month</option>
+                                            <option value="4">each 4 month</option>
+                                            <option value="6">each 6 month</option>
+                                            <option value="12">each year</option>
+                                            <option value="0">deposit end</option>
+                                        </select>
                                     </div>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td colspan="3">
-                                    <div class="commonfont permanentlink hiddenstyle">
-                                        <a href="" id="permlink" target="_blank">Permanent link</a>
+                                <td colspan="1">
+                                    <div class="buttonspanel">
+                                        <div class="calcbuttonpanel">
+                                            <div class="loaderimgpanel hiddenstyle">
+                                                <img src='img/loader.gif' class="loaderimg" />
+                                            </div>
+                                            <button class="nbutton nbutton-main" id="calculateButton" type="button">Calculate</button>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -298,26 +326,26 @@
                     <div class="resultcol">
                         <div class="resultrow">
                             <div class="resultheader">End Sum</div>
-                            <div id="endsumresult" class="resultvalue"></div>
+                            <div id="endsumresult" class="resultvalue">0</div>
                         </div>
                         <div class="resultrow">
                             <div class="resultheader">Percents</div>
-                            <div id="percentsresult" class="resultvalue"></div>
+                            <div id="percentsresult" class="resultvalue">0</div>
                         </div>
                     </div>
                     <div class="resultcol">
                         <div class="resultrow">
                             <div class="resultheader">Premium percents</div>
-                            <div id="premiumpercentresult" class="resultvalue"></div>
+                            <div id="premiumpercentresult" class="resultvalue">0</div>
                         </div>
                         <div class="resultrow">
                             <div class="resultheader">Added manually</div>
-                            <div id="manualaddresult" class="resultvalue"></div>
+                            <div id="manualaddresult" class="resultvalue">0</div>
                         </div>
                     </div>
                 </div>
                 <div class="monthincomepanel hiddenstyle">
-                    <div class="monthincomepanelheader">Month income</div>
+                    <div class="monthincomepanelheader">Percents income</div>
                     <div class="monthincomecontainer"></div>
                 </div>
                 <div class="contactBottomPanel">
@@ -329,32 +357,30 @@
                     <a id="help-popup-close" href="">Close</a>
                 </div>
                 <div class="help-popup-content">
-                    <b>Premium %</b> - calculated each month, will be added to the sum only at
+                    <b>Premium %</b> - calculated each capitalization perioud, will be added to the sum only at
                     the end of the deposit. Leave 0 if you don't have it.
                     <br/>
                     <br/>
-                    <b>Calculations example:</b><br/>
+                    <b>Calculations example:</b>
+                    <br/>
                     <div>3 months, initial 10 000, under 12%, premium 1%, month add 1000.</div>
                     <br/>End of Month 1:
-                    <div>
-                             a) calculate premium percents: 10 000 * 0.01 / 12 = 8.33
+                    <div>a) calculate premium percents: 10 000 * 0.01 / 12 = 8.33
                         <br/>b) calculate percents: 10 000 * 0.12 / 12 = 100
                         <br/>c) add percents to the sum: 10 000 + 100 = 10 100
                         <br/>d) manual added money: 10 100 + 1000 = 11 100
                         <br/>
                     </div>
-                        <br/>End of Month 2:
-                    <div>
-                             a) calculate premium percents: 11 100 * 0.01 / 12 = 9.25
+                    <br/>End of Month 2:
+                    <div>a) calculate premium percents: 11 100 * 0.01 / 12 = 9.25
                         <br/>b) sum premium percents 8.33 + 9.25 = 17.58
                         <br/>c) calculate percents: 11 100 * 0.12 / 12 = 111
                         <br/>d) add percents to the sum: 11 100 + 111 = 11 211
                         <br/>e) manual added money: 11 211 + 1000 = 12 211
                         <br/>
                     </div>
-                        <br/>End of Month 3:
-                    <div>
-                             a) calculate premium percents: 12 211 * 0.01 / 12 = 10.18
+                    <br/>End of Month 3:
+                    <div>a) calculate premium percents: 12 211 * 0.01 / 12 = 10.18
                         <br/>b) sum premium percents 17.58 + 10.18 = 27.76
                         <br/>c) calculate percents: 11 211 * 0.12 / 12 = 122.11
                         <br/>d) add percents to the sum: 12 211 + 122.11 = 12 333.11
@@ -362,10 +388,9 @@
                         <br/>f) manual added money: 13 333.11 + 27.76 = 13 360.76
                         <br/>
                     </div>
-                        <br/>Result:
-                        <div>End sum: 13 361, percents: 333.11, premium percents: 27.76, manually
-                        added: 3 000. Month income: M1 100, M2 111, M3 122.11
-                        </div>
+                    <br/>Result:
+                    <div>End sum: 13 361, percents: 333.11, premium percents: 27.76, manually added:
+                        3 000. Month income: M1 100, M2 111, M3 122.11</div>
                 </div>
             </div>
             <div class="disabler hiddenstyle"></div>

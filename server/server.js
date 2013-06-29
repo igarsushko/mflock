@@ -12,12 +12,12 @@ initServer();
 function configureRoutes(server)
 {
     // Routes
-    server.get('/deposit/years/:years/months/:months/percent/:percent/premiumpercent/:premiumpercent/init/:init/monthadd/:monthadd', function respond(req, res, next)
+    server.get('/deposit/years/:years/months/:months/percent/:percent/premiumpercent/:premiumpercent/init/:init/monthadd/:monthadd/capfrequency/:capfrequency', function respond(req, res, next)
     {
         var p = req.params;
         validateDepositParams(p, next);
 
-        var result = calc.calculateDeposit(p.years, p.months, p.percent, p.premiumpercent, p.init, p.monthadd);
+        var result = calc.calculateDeposit(p.years, p.months, p.percent, p.premiumpercent, p.init, p.monthadd, p.capfrequency);
         validateDepositResult(result, next);
 
         res.send(result);
@@ -37,13 +37,54 @@ function validateDepositParams(p, next)
 {
     var mes = null;
 
-    //1. validate number format
+    //1. validate number format for ALL fields
     for (var prop in p)
     {
         var str = '' + p[prop];
         if (!vars.numRegex.test(str))
         {
             mes = 'Please use valid number for ' + prop + '.';
+            return next(new restify.InvalidArgumentError(mes));
+        }
+    }
+
+    //2. intial check
+    if (p.init <= 0)
+    {
+        mes = 'Initial should be > 0.';
+        return next(new restify.InvalidArgumentError(mes)); 
+    }
+
+    //3. percent check
+    if (p.percent <= 0)
+    {
+        mes = 'Percent should be > 0.';
+        return next(new restify.InvalidArgumentError(mes)); 
+    }
+
+    //4. validate capitalization rate value
+    var cf = p.capfrequency;
+    if (cf != '0.5' && cf != '1' && cf != '3' && cf != '4' && cf != '6' && cf != '12' && cf != '0')
+    {
+        mes = 'Please use valid value for capitalization frequency. Allowed 0.5, 1, 3, 4, 6, 12, 0';
+        return next(new restify.InvalidArgumentError(mes));
+    }
+
+    //5. validate month with capitalization frequency
+    var months = p.months;
+    if (months != 0 && cf != '0.5' && cf != '1')
+    {
+        if (cf == '0')
+        {
+            mes = 'Please don\'t use months when capitalization is deposit end.';
+        }
+        else if ((months % cf) != 0)
+        {
+            mes = 'Months must be a multiple of capitalization perioud. Entered month=' + months + ' perioud=' + cf + '.';
+        }
+
+        if (mes != null)
+        {
             return next(new restify.InvalidArgumentError(mes));
         }
     }

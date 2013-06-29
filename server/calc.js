@@ -1,6 +1,10 @@
 exports.calculateDeposit = calculateDeposit;
 
-function calculateDeposit(years, months, percent, premiumpercent, init, everyMonthAdd)
+// does not work for cases e.g.:
+// capfrequency 0, 12 and we have year with monthes, or just monthes
+// or month == 2, capfrequency == 3
+//explicit validation expected
+function calculateDeposit(years, months, percent, premiumpercent, init, everyMonthAdd, capfrequency)
 {
     var response = {
         params: {
@@ -9,7 +13,8 @@ function calculateDeposit(years, months, percent, premiumpercent, init, everyMon
             "percent": percent,
             "premiumpercent": premiumpercent,
             "init": init,
-            "everyMonthAdd": everyMonthAdd
+            "everyMonthAdd": everyMonthAdd,
+            "capfrequency": capfrequency
         },
         result: {
             monthIncome: {},
@@ -24,18 +29,19 @@ function calculateDeposit(years, months, percent, premiumpercent, init, everyMon
 
     var sum = parseFloat(init);
     everyMonthAdd = parseFloat(everyMonthAdd);
+    capfrequency = parseFloat(capfrequency);
     var percentsTotal = 0.0;
     var manualAdded = 0.0;
     var premiumIncome = 0.0;
 
     var yearsLoop = parseInt(years, 10);
-    var monthLoop = 12;
+    var periodLoop = 12;
     var yearAndMonth = false;
     // 1. if time < year
-    if (years === '0' && months !== '0')
+    if (years == 0 && months != 0)
     {
         yearsLoop = 1;
-        monthLoop = parseInt(months, 10);
+        periodLoop = parseInt(months, 10);
     }
     // 2. both year and month set
     else if (years !== '0' && months !== '0')
@@ -44,30 +50,70 @@ function calculateDeposit(years, months, percent, premiumpercent, init, everyMon
         yearAndMonth = true;
     }
 
+    // 12 / [0.5|1|3|4|6|12|0]
+    //if deposit end (0) then calculate % as each year but add % only on the end
+    var capfrequencyUpdated = capfrequency == 0 ? 12 : capfrequency;
+    periodLoop = periodLoop / capfrequencyUpdated;
+    var partsInYear = 12 / capfrequencyUpdated;
+
     var finite = true;
+    var partPeriodPercents = 0;
     outer: for (var y = 0; y < yearsLoop; y++)
     {
-        for (var m = 0; m < monthLoop; m++)
+        for (var p = 0; p < periodLoop; p++)
         {
             if (!finite)
             {
                 break outer;
             }
 
-            var percentsForMonth = sum * percent / 100 / 12;
-            var premiumIncomMoth = sum * premiumpercent / 100 / 12;
-            sum += (percentsForMonth + everyMonthAdd);
-            percentsTotal += percentsForMonth;
-            premiumIncome += premiumIncomMoth;
-            manualAdded += everyMonthAdd;
+            var percentsForPeriod = sum * percent / 100 / partsInYear;
+            var premiumIncomForPeriod = sum * premiumpercent / 100 / partsInYear;
+            //not for deposit end
+            if (capfrequency != 0)
+            {
+                sum += percentsForPeriod;
+            }
+            percentsTotal += percentsForPeriod;
+            premiumIncome += premiumIncomForPeriod;
 
-            var id = 'y' + (y + 1) + 'm' + (m + 1);
-            result.monthIncome[id] = fmtMoney(percentsForMonth);
+            //squash half month income into 1 month, for showing on UI as 1 month
+            if (capfrequency == 0.5)
+            {
+                //first half
+                if (p % 2 == 0)
+                {
+                    partPeriodPercents += percentsForPeriod;
+                }
+                //seconf half
+                else
+                {
+                    var id = 'y' + (y + 1) + 'p' + ((p + 1) / 2);
+                    result.monthIncome[id] = fmtMoney(percentsForPeriod + partPeriodPercents);
+                    partPeriodPercents = 0;
+
+                    sum += everyMonthAdd;
+                    manualAdded += everyMonthAdd;
+                }
+            }
+            else
+            {
+                sum += everyMonthAdd * capfrequencyUpdated;
+                manualAdded += everyMonthAdd * capfrequencyUpdated;
+
+                //not for deposit end
+                if (capfrequency != 0)
+                {
+                    var id = 'y' + (y + 1) + 'p' + ((p + 1) * capfrequency);
+                    result.monthIncome[id] = fmtMoney(percentsForPeriod);
+                }
+            }
         }
 
+        // year + month, calculate for remaining month, after last year iteration
         if (yearAndMonth && (y == yearsLoop - 2))
         {
-            monthLoop = months;
+            periodLoop = months / capfrequencyUpdated;
         }
 
         finite = isFinite(sum) && isFinite(percentsTotal) && isFinite(premiumIncome) && isFinite(manualAdded);
@@ -76,6 +122,12 @@ function calculateDeposit(years, months, percent, premiumpercent, init, everyMon
     if (finite)
     {
         sum += premiumIncome;
+        //if on end deposit, add percents at last
+        if (capfrequency == 0)
+        {
+            sum += percentsTotal;
+            result.monthIncome = null;
+        }
 
         result.endSum = fmtMoney(sum);
         result.percents = fmtMoney(percentsTotal);

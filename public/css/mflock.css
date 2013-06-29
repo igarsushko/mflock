@@ -59,9 +59,18 @@ input[type=text]:focus {
     display:inline-block;
     color:#666666;
     font-size:13px;
-    font-weight:bold;
-    padding:6px 24px;
+    
 }
+.nbutton-main {
+    font-weight:bold;
+    padding:6px 20px;
+}
+
+.nbutton-other {
+    font-weight:normal;
+    padding:6px 14px;
+}
+
 .nbutton:hover {
     background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f6f6f6), color-stop(1, #ffffff));
     background:-moz-linear-gradient(top, #f6f6f6 5%, #ffffff 100%);
@@ -73,7 +82,7 @@ input[type=text]:focus {
 }
 .nbutton:active {
     position:relative;
-    top:1px;
+    top: 1px;
 }
 /* nice button end*/
 
@@ -114,3 +123,12 @@ input[type=text]:focus {
 }
 
 /* nice table zebra end */
+
+
+/* common start */
+.commonfont {
+    font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 13px;
+    color: #039;
+}
+/* common end */

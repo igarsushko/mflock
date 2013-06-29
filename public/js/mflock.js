@@ -6,8 +6,11 @@ $(document).ready(function()
     setValuesFromQuery();
 
     $('.spacifyme').change();
+    populateCFSelectOptions();
     runActionFromQuery();
 });
+
+var capFrequencyOptions = {};
 
 function runActionFromQuery()
 {
@@ -22,31 +25,44 @@ function setValuesFromQuery()
     if (util.queryParams['a'] == 'deposit')
     {
         util.setValueFromParam('years', 0, 'int');
-        util.setValueFromParam('months', 0, 'int', 12);
+        util.setValueFromParam('months', 0, 'int');
         util.setValueFromParam('percent', 0, 'float');
         util.setValueFromParam('premiumpercent', 0, 'float');
         util.setValueFromParam('init', 0, 'float');
         util.setValueFromParam('monthadd', 0, 'float');
+        util.setValueFromParam('capfrequency', 1, 'float');
     }
 }
 
 function initComponents()
 {
+    capFrequencyOptions['0.5'] = new Option('half of month', '0.5', false, false)
+    capFrequencyOptions['1'] = new Option('each month', '1', true, true)
+    capFrequencyOptions['3'] = new Option('each 3 month', '3', false, false)
+    capFrequencyOptions['4'] = new Option('each 4 month', '4', false, false)
+    capFrequencyOptions['6'] = new Option('each 6 month', '6', false, false)
+    capFrequencyOptions['12'] = new Option('each year', '12', false, false)
+    capFrequencyOptions['0'] = new Option('deposit end', '0', false, false)
+
     $(document).keypress(function(e)
     {
         var charCode = util.charCode(e);
-        if (charCode == 13)//enter
+        if (charCode == 13) //enter
         {
             calculateDeposit();
         }
     });
-    
+
     $(document).keydown(function(e)
     {
         var charCode = util.charCode(e);
-        if (charCode == 27 && !$('.help-popup').hasClass('hiddenstyle'))//escape
+        if (charCode == 27 && !$('.help-popup').hasClass('hiddenstyle')) //escape
         {
             closeHelpPopup();
+        }
+        else if (charCode == 82) // 'R'
+        {
+            clearAll();
         }
     })
 
@@ -55,9 +71,9 @@ function initComponents()
         calculateDeposit();
     });
 
-    $('.intnumvalidate').keypress(isIntNumberKey);
+    $('.intnumvalidate').keypress(allowOnlyIntNumberKey);
     $('.floatnumvalidate').keypress(isFloatNumberKey);
-    $('.fixify').change(fixify);
+    $('.fixify').keyup(fixify);
     $('.fixify').keypress(function(e)
     {
         if (util.charCode(e) == 13)
@@ -65,8 +81,6 @@ function initComponents()
             fixify(e);
         }
     });
-
-    $('.fixify').keydown(disableCtrlKeyCombination);
 
     $('.spacifyme').change(function()
     {
@@ -77,9 +91,7 @@ function initComponents()
     $('#helpa').click(function()
     {
         $('.help-popup').removeClass('hiddenstyle');
-        $('.disabler').keydown(function(){alert(3)});
         $('.disabler').removeClass('hiddenstyle');
-        $('.disabler').keydown(function(){alert(2)});
         return false;
     });
 
@@ -88,41 +100,82 @@ function initComponents()
         closeHelpPopup();
         return false;
     });
+
+    $('#months').keyup(function()
+    {
+        populateCFSelectOptions();
+    });
+    
+    $('#capfrequency').change(function()
+    {
+        calculateDeposit();
+    });
+}
+
+// 0 % x == 0
+function populateCFSelectOptions()
+{
+        var months = $('#months').val();
+
+        var select = util.byId('capfrequency');
+        var prevSelectedIndex = select.selectedIndex;
+
+        select.options.length = 0;
+
+        select.add(capFrequencyOptions['0.5']);
+        select.add(capFrequencyOptions['1']);
+
+        if (months % 3 == 0)
+        {
+            select.add(capFrequencyOptions['3']);
+        }
+        
+        if (months % 4 == 0)
+        {
+            select.add(capFrequencyOptions['4']);
+        }
+        
+        if (months % 6 == 0)
+        {
+            select.add(capFrequencyOptions['6']);
+        }
+
+        if (months == 0 || months % 12 == 0)
+        {
+            select.add(capFrequencyOptions['12']);
+        }
+
+        if (months == 0)
+        {
+            select.add(capFrequencyOptions['0']);//deposit end
+        }
+        
+        select.selectedIndex = prevSelectedIndex > select.options.length ? 1 : prevSelectedIndex;
+}
+
+function clearAll()
+{
+    $('#years').val(0);
+    $('#months').val(0);
+    $('#init').val(0);
+    $('#percent').val(0);
+    $('#premiumpercent').val(0);
+    $('#monthadd').val(0);
+    $('#capfrequency').val(1);
+
+    $('#endsumresult').text(0);
+    $('#percentsresult').text(0);
+    $('#premiumpercentresult').text(0);
+    $('#manualaddresult').text(0);
+
+    $('#errormessage').empty();
+    $('.monthincomepanel').addClass('hiddenstyle');
 }
 
 function closeHelpPopup()
 {
     $('.help-popup').addClass('hiddenstyle');
     $('.disabler').addClass('hiddenstyle');
-}
-
-function disableCtrlKeyCombination(e)
-{
-    var forbiddenKeys = ['v'];
-    var key;
-    var isCtrl;
-    if (window.event)
-    {
-        key = window.event.keyCode; //IE
-        isCtrl = window.event.ctrlKey;
-    }
-    else
-    {
-        key = e.which; //modern browsers
-        isCtrl = e.ctrlKey;
-    }
-
-    if (isCtrl)
-    {
-        for (var i = 0; i < forbiddenKeys.length; i++)
-        {
-            if (forbiddenKeys[i] == String.fromCharCode(key).toLowerCase())
-            {
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 function validateFields()
@@ -154,32 +207,31 @@ function calculateDeposit()
     $('#calculateButton').prop('disabled', true);
     $('.loaderimgpanel').removeClass('hiddenstyle');
     $('.monthincomepanel').addClass('hiddenstyle');
-    $('.permanentlink').addClass('hiddenstyle');
 
     $('#resulttbody').empty();
     $('.monthincomecontainer').empty();
 
     var init = rmspce($('#init').val());
     var monthadd = rmspce($('#monthadd').val());
+    var capfreq = util.getSelectValue('capfrequency');
 
-    var deposit = createDepositUrls($('#years').val(), $('#months').val(), $('#percent').val(), $('#premiumpercent').val(), init, monthadd);
+    var deposit = createDepositUrls($('#years').val(), $('#months').val(), $('#percent').val(), $('#premiumpercent').val(), init, monthadd, capfreq);
     util.ajax.get(deposit.restUrl, function success(data)
     {
-        $('#permlink').attr('href', deposit.permUrl);
-        createResultOutput(data);
-        $('.monthincomepanel').removeClass('hiddenstyle');
-        $('.permanentlink').removeClass('hiddenstyle');
+        createShowResultOutput(data);
     }, function always()
     {
         $('#calculateButton').prop('disabled', false);
         $('.loaderimgpanel').addClass('hiddenstyle');
     });
+
+    util.changeBrowserUrl(deposit.permUrl);
 }
 
-function createDepositUrls(years, months, percent, premiumpercent, init, monthadd)
+function createDepositUrls(years, months, percent, premiumpercent, init, monthadd, capfreq)
 {
-    var rest = util.format(util.depositRestTemplate, years, months, percent, premiumpercent, init, monthadd);
-    var perm = util.format(util.depositSiteTemplate, years, months, percent, premiumpercent, init, monthadd);
+    var rest = util.format(util.depositRestTemplate, years, months, percent, premiumpercent, init, monthadd, capfreq);
+    var perm = util.format(util.depositSiteTemplate, years, months, percent, premiumpercent, init, monthadd, capfreq);
 
     return {
         restUrl: rest,
@@ -187,7 +239,7 @@ function createDepositUrls(years, months, percent, premiumpercent, init, monthad
     }
 }
 
-function createResultOutput(data)
+function createShowResultOutput(data)
 {
     var result = data.result;
 
@@ -199,10 +251,16 @@ function createResultOutput(data)
 
     // #2
     var income = data.result.monthIncome;
-    var mi = '';
+    if (!income)
+    {
+        return;
+    }
 
+    var colCount = columnsCount(income);
+
+    var mi = '';
     mi += '<table class="zebra">'
-    mi += '<thead><tr>' + incomeHeaders(income) + '</tr></thead>';
+    mi += '<thead><tr>' + incomeHeaders(colCount) + '</tr></thead>';
     mi += '<tbody>';
 
     var j = 0;
@@ -218,7 +276,7 @@ function createResultOutput(data)
         mi += util.td(income[prop]);
         j++;
 
-        if (j == 12)
+        if (j == colCount)
         {
             j = 0;
             year++;
@@ -231,24 +289,34 @@ function createResultOutput(data)
     mi += '</table>'
 
     $('.monthincomecontainer').html(mi);
+    $('.monthincomepanel').removeClass('hiddenstyle');
 }
 
+function columnsCount(income)
+{
+    var colCount = 0;
+    for (var prop in income)
+    {
+        if (prop.lastIndexOf('y1p') == 0)
+        {
+            colCount++;
+            if (colCount > 12)
+            {
+                break;
+            }
+        }
+    }
+    return colCount;
+}
 
 /* create income table headers, can be less 12 month*/
-function incomeHeaders(income)
+function incomeHeaders(colCount)
 {
     var headers = util.th('Year', 'min-width: 40px;');
 
-    var propIdx = 1;
-    for (var prop in income)
+    for (var i = 1; i <= colCount; i++)
     {
-        headers += util.th('M' + propIdx);
-        propIdx++;
-
-        if (propIdx > 12)
-        {
-            break;
-        }
+        headers += util.th('M' + i * 12 / colCount);
     }
 
     return headers;
@@ -311,7 +379,7 @@ function isFloatNumberKey(evt)
     stopEvent(!isAllowed, evt);
 }
 
-function isIntNumberKey(evt)
+function allowOnlyIntNumberKey(evt)
 {
     var charCode = util.charCode(evt);
     var isAllowed = isNumKey(charCode) || isSpecialKey(charCode);
@@ -376,14 +444,14 @@ function rmspce(str)
 var util = {
     rtrim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
     queryParams: {},
-    depositRestTemplate: '/deposit/years/{0}/months/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}',
+    depositRestTemplate: '/deposit/years/{0}/months/{1}/percent/{2}/premiumpercent/{3}/init/{4}/monthadd/{5}/capfrequency/{6}',
     depositSiteTemplate: '',
     init: function()
     {
         this.queryParams = this.getUrlParams();
 
-        var siteBase = 'http://moneyflock.com/deposit.html';
-        this.depositSiteTemplate = siteBase + '?a=deposit&years={0}&months={1}&percent={2}&premiumpercent={3}&init={4}&monthadd={5}';
+        var siteBase = '/deposit.html';
+        this.depositSiteTemplate = siteBase + '?a=deposit&years={0}&months={1}&percent={2}&premiumpercent={3}&init={4}&monthadd={5}&capfrequency={6}';
     },
     trim: function(text)
     {
@@ -392,6 +460,15 @@ var util = {
     isBlank: function(str)
     {
         return typeof str === 'undefined' || str === null || str === '' || this.trim(str) === '';
+    },
+    byId: function(id)
+    {
+        return document.getElementById(id);
+    },
+    getSelectValue: function(selectId)
+    {
+        var selectEl = this.byId(selectId);
+        return selectEl.options[selectEl.selectedIndex].value;
     },
     setValueFromParam: function(id, fallback, type)
     {
@@ -498,6 +575,41 @@ var util = {
     charCode: function(evt)
     {
         return evt.which ? evt.which : event.keyCode;
+    },
+    //forbiddenKeys like ['v']
+    disableCtrlKeyCombination: function(e, forbiddenKeys)
+    {
+        var key;
+        var isCtrl;
+        if (window.event)
+        {
+            key = window.event.keyCode; //IE
+            isCtrl = window.event.ctrlKey;
+        }
+        else
+        {
+            key = e.which; //modern browsers
+            isCtrl = e.ctrlKey;
+        }
+
+        if (isCtrl)
+        {
+            for (var i = 0; i < forbiddenKeys.length; i++)
+            {
+                if (forbiddenKeys[i] == String.fromCharCode(key).toLowerCase())
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    },
+    changeBrowserUrl: function(newUrl)
+    {
+        if (window.history && window.history.replaceState)
+        {
+            window.history.replaceState(null, null, newUrl);
+        }
     },
     ajax: {
         createXHR: function()

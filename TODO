@@ -1,4 +1,15 @@
+Months on change validate select values add/remove
+calculate on period change
+validate on server month + capfrequency
+after copy paste in field does not work .fixify
 bug in IE same query does not calculate more 1 time
+if input 0, make empty on focus, and back if empty again
+in opera, inputs highlighting
+on focus shrink zeoroz back 234 236 666
 add favicon.ico
-automation test: like http://host/integrationTest
-it sends requests to rest api, and checks response, disable this url for prod
+automation test: like http://host/integrationTest it sends requests to rest api, and checks response, disable this url for prod
+request timeout https://github.com/mcavage/node-restify/issues/288 on server
+client request timout
+focus on enter button on enter
+add validation mechanism, server returns code us highlights field
+shrink result table when not 12 months
