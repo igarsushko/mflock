@@ -1,14 +1,8 @@
 ---
 applications:
-  .:
-    name: moneyflock
-    framework:
-      name: node
-      info:
-        mem: 64M
-        description: Node.js Application
-        exec: 
-    infra: eu-aws
-    url: ${name}.${target-base}
-    mem: 64M
-    instances: 1
+- name: moneyflock
+  memory: 64m
+  instances: 1
+  url: moneyflock.cfapps.io
+  path: .
+  command: node ./server/server.js
