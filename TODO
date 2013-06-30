@@ -17,3 +17,4 @@ add validation mechanism, server returns code us highlights field
 shrink result table when not 12 months
 набить до предела текст отпустить - спейсифай не палит
 disable select when calculation is in progress but don't grey it out
+add footer space

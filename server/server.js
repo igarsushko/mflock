@@ -126,9 +126,9 @@ function validateDepositParams(p, next)
 
 function initVars()
 {
-    //c9.io || cloudfoundry.com, appfog.com || localhost
-    vars.port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
-    vars.ip = process.env.IP || process.env.VCAP_APP_HOST || vars.localhost;
+    //openshift.com || c9.io || cloudfoundry.com, appfog.com || localhost
+    vars.port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+    vars.ip = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || process.env.VCAP_APP_HOST || vars.localhost;
 
     if (vars.ip === vars.localhost)
     {
