@@ -131,4 +131,45 @@ input[type=text]:focus {
     font-size: 13px;
     color: #039;
 }
+.contactBottomPanel {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 200px;
+    text-align: right;
+    margin: 2px;
+    margin-right: 7px;
+    font-size: 12px;
+}
+.root {
+    z-index: 0;
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+.container {
+    position: relative;
+    max-width: 1200px;
+    height: 100%;
+    top: 50px;
+    margin: auto;
+    /* centers */
+    line-height: 1.3em;
+}
+.headerpanel {
+    border-bottom: 2px solid #e8e8e7;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+.headerpanelmessage {
+}
+.help-panel {
+    font-size: 12px;
+    text-align: right;
+    margin-bottom: 2px;
+}
+.helplink {
+    margin-right: 2px;
+}
 /* common end */

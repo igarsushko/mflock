@@ -5,8 +5,8 @@
   },
   "name": "moneyflock",
   "homepage": "http://moneyflock.com",
-  "description": "Site for deposits, loans, active/passive money flocks counting.",
-  "version": "1.1.2",
+  "description": "Site for deposits/credits payments counting.",
+  "version": "1.2-SNAPSHOT",
   "repository": {
     "type": "git",
     "url": "git@github.com:igarsushko/mflock.git"
