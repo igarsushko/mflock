@@ -272,7 +272,7 @@ function createShowResultOutput(data)
 
     var mi = '';
     mi += '<table class="zebra">'
-    mi += '<thead><tr>' + incomeHeaders(colCount) + '</tr></thead>';
+    mi += '<thead><tr>' + incomeHeaders(colCount, data.params.capfrequency) + '</tr></thead>';
     mi += '<tbody>';
 
     var j = 0;
@@ -320,15 +320,22 @@ function columnsCount(income)
     }
     return colCount;
 }
-
+//
 /* create income table headers, can be less 12 month*/
-function incomeHeaders(colCount)
+function incomeHeaders(colCount, capfrequency)
 {
+    var freq = capfrequency;
+    if (freq == 0 || freq == 0.5)//zero not expected
+    {
+        freq = 1;
+    }
+
     var headers = util.th('Year', 'min-width: 40px;');
 
     for (var i = 1; i <= colCount; i++)
     {
-        headers += util.th('M' + i * 12 / colCount);
+        var num = i * freq;
+        headers += util.th('M' + num);
     }
 
     return headers;
